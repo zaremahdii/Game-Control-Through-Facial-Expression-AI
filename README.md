@@ -2,6 +2,10 @@
 
 This local service opens the camera, processes head movement and facial expressions, then sends compact control data to Unity through WebSocket. Unity does not upload camera frames to the server.
 
+## Unity client repository
+
+Use [Game-Control-Through-Facial-Expression](https://github.com/zaremahdii/Game-Control-Through-Facial-Expression) as the Unity client. Run this AI service locally, then configure the Unity client to connect to `ws://127.0.0.1:8000/ws`.
+
 ## Requirements
 
 - Docker Desktop running
@@ -42,6 +46,28 @@ The server sends messages in this format:
 ```
 
 `direction` can be `left`, `right`, or `neutral`. `emotion` can be `anger`, `happiness`, `neutral`, `sadness`, or `surprise`.
+
+## Unity camera preview stream
+
+The same WebSocket also sends a lightweight JPEG camera preview to Unity. Python remains the only application that opens the physical webcam.
+
+```text
+Webcam
+  ↓
+Python camera capture
+  ├── AI control JSON
+  └── JPEG preview frames
+          ↓
+        Unity
+```
+
+Preview frames are resized to `320x180`, JPEG encoded with quality `70`, and limited to `10 FPS`. This keeps the preview lightweight while preserving the control messages on the same local WebSocket.
+
+Restart the Python server after changing `server_with_local_webcam.py`:
+
+```powershell
+& $venvPython -m uvicorn server_with_local_webcam:app --host 127.0.0.1 --port 8000
+```
 
 ## Required models
 
