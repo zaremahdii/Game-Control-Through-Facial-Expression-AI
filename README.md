@@ -1,38 +1,38 @@
 # Facial Expression AI Server
 
-این سرویس دوربین محلی را باز می‌کند، حرکت سر و حالت چهره را پردازش می‌کند و نتیجه را با WebSocket برای Unity می‌فرستد. Unity هیچ فریم تصویری به این سرویس ارسال نمی‌کند.
+This local service opens the camera, processes head movement and facial expressions, then sends compact control data to Unity through WebSocket. Unity does not upload camera frames to the server.
 
-## نیازمندی‌ها
+## Requirements
 
-- Docker Desktop در حال اجرا
-- وب‌کم متصل
-- پورت `8000` آزاد
+- Docker Desktop running
+- A connected webcam
+- Port `8000` available
 
-## ساخت و اجرای Docker
+## Build and run with Docker
 
-در PowerShell این پوشه را باز کنید:
+Open PowerShell in this folder:
 
 ```powershell
-cd "E:\facial expression\AI"
+cd "E:\facial expression\Game-Control-Through-Facial-Expression-AI"
 docker build -t facial-expression-ai:latest .
 docker run --rm --name facial-expression-ai -p 8000:8000 facial-expression-ai:latest
 ```
 
-برای بررسی آماده‌بودن سرویس:
+Check that the server is available:
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/health
 ```
 
-## اتصال Unity
+## Unity connection
 
-Unity به آدرس زیر وصل می‌شود:
+Unity connects to this WebSocket endpoint:
 
 ```text
 ws://127.0.0.1:8000/ws
 ```
 
-سرور پیامی شبیه نمونهٔ زیر می‌فرستد:
+The server sends messages in this format:
 
 ```json
 {
@@ -41,17 +41,17 @@ ws://127.0.0.1:8000/ws
 }
 ```
 
-مقادیر `direction` شامل `left`، `right` و `neutral` هستند. مقادیر `emotion` شامل `anger`، `happiness`، `neutral`، `sadness` و `surprise` هستند.
+`direction` can be `left`, `right`, or `neutral`. `emotion` can be `anger`, `happiness`, `neutral`, `sadness`, or `surprise`.
 
-## مدل‌ها
+## Required models
 
-هر دو فایل زیر برای شروع سرویس لازم هستند و باید در پوشهٔ `Models` باقی بمانند:
+Keep these model files in the `Models` directory:
 
 ```text
 Models/hopenet_robust_alpha1.pkl
 Models/vit_best_model.pth
 ```
 
-## نکتهٔ وب‌کم در Docker Desktop ویندوز
+## Webcam access in Docker Desktop on Windows
 
-Docker Desktop ویندوز معمولاً وب‌کم میزبان را مستقیماً در اختیار کانتینر Linux قرار نمی‌دهد. اگر WebSocket وصل شد اما سرور خطای بازکردن دوربین داد، وب‌کم باید با USB/IP به Docker VM متصل شود یا سرویس در محیط Linux با دسترسی به دستگاه دوربین اجرا شود.
+Docker Desktop on Windows may not expose the host webcam directly to a Linux container. If the server starts but cannot open the camera, connect the camera to the Docker VM through USB/IP or run the container in a Linux environment that has direct camera-device access.
