@@ -55,3 +55,29 @@ Models/vit_best_model.pth
 ## Webcam access in Docker Desktop on Windows
 
 Docker Desktop on Windows may not expose the host webcam directly to a Linux container. If the server starts but cannot open the camera, connect the camera to the Docker VM through USB/IP or run the container in a Linux environment that has direct camera-device access.
+
+For an integrated laptop webcam, direct Python execution on Windows is the recommended local development option.
+
+## Run directly with Python on Windows
+
+Stop the Docker container before starting the local server so port `8000` is available.
+
+This project uses Python `3.11`. If the `py` launcher is not available, use the Python executable directly:
+
+```powershell
+cd "E:\facial expression\Game-Control-Through-Facial-Expression-AI"
+
+& "C:\Users\Surena\AppData\Local\Programs\Python\Python311\python.exe" -m venv .venv
+
+$venvPython = "$PWD\.venv\Scripts\python.exe"
+
+& $venvPython -m pip install --upgrade pip
+
+& $venvPython -m pip install torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cpu
+
+& $venvPython -m pip install -r requirements.txt
+
+& $venvPython -m uvicorn server_with_local_webcam:app --host 127.0.0.1 --port 8000
+```
+
+When the server is ready, it displays `Uvicorn running on http://127.0.0.1:8000`. Start the Unity Level1 scene after that message appears.
