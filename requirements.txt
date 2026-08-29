@@ -1,0 +1,15 @@
+# FastAPI and Server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# AI & Machine Learning
+torch==2.1.2
+torchvision==0.16.2
+mediapipe==0.10.7
+
+# Image & Data Processing
+opencv-python==4.8.1.78
+numpy==1.26.1
+
+# Other Utilities
+requests==2.31.0
