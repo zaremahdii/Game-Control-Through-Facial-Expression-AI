@@ -906,6 +906,8 @@ async def websocket_endpoint(
 
     cap = cv2.VideoCapture(0)
 
+    preview_last_sent = 0.0
+
     if not cap.isOpened():
 
         print(
@@ -942,6 +944,32 @@ async def websocket_endpoint(
                 )
 
                 break
+
+            preview_now = time.monotonic()
+
+            if preview_now - preview_last_sent >= 0.1:
+
+                preview_frame = cv2.resize(
+                    frame,
+                    (320, 180)
+                )
+
+                preview_encoded, preview_jpeg = cv2.imencode(
+                    '.jpg',
+                    preview_frame,
+                    [
+                        cv2.IMWRITE_JPEG_QUALITY,
+                        70
+                    ]
+                )
+
+                if preview_encoded:
+
+                    await websocket.send_bytes(
+                        preview_jpeg.tobytes()
+                    )
+
+                preview_last_sent = preview_now
 
 
             # Process the image using
